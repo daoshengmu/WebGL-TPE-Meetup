@@ -25,28 +25,32 @@ date: 06/06/2015
                 var container, mesh;
 
                 // Init WebGL render and append it to dom element.
-                container = document.getElementById('container');
+                container = document.getElementById( 'container' );
                 renderer = new THREE.WebGLRenderer();                
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setSize( window.innerWidth, window.innerHeight );
                 container.appendChild( renderer.domElement );
 
                 // Setup perspective camera: fovY, aspect, near, far
-                camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2000);
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 2000 );
                 //// Camera look at 0,0,0 at 3D scene
-                camera.target = new THREE.Vector3(0, 0, 0);
+                camera.target = new THREE.Vector3( 0, 0, 0 );
                 //// Camera position in 3D scene
                 camera.position.set( 0, 0, 900 );
 
                 // Create 3D sphere mesh and material
                 //// Sphere geometry: radius, widthSegments, heightSegments
-                var geometry = new THREE.SphereGeometry(500, 60, 60);
+                var geometry = new THREE.SphereGeometry( 500, 60, 60 );
+                //// Apply matrix transform
+                //// ......
                 //// Create a basic material for mesh
                 var material = new THREE.MeshBasicMaterial( {
                     color: 0xff0000
                 });
+                //// Give texture to material
+                //// ......
 
                 // Finish making our mesh
-                mesh = new THREE.Mesh(geometry, material);
+                mesh = new THREE.Mesh( geometry, material );
 
                 // Create 3D scene and add sphere mesh
                 scene = new THREE.Scene();
@@ -54,8 +58,13 @@ date: 06/06/2015
 
                 window.addEventListener( 'resize', onWindowResize, false );
             
+                // Add mouse controls on camera
+                //// ......
+
                 gameLoop();
             }
+
+            // ..... Mouse control event listeners
 
             function onWindowResize() {
 
@@ -69,6 +78,9 @@ date: 06/06/2015
 
                 // requestAnimationFrame function tell browsers to update animation. Usually 60 FPS
                 requestAnimationFrame( gameLoop );
+
+                // Calculate camera transform according to mouse controls
+                //// ......
 
                 camera.lookAt( camera.target );
 
