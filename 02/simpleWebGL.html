@@ -18,65 +18,43 @@ date: 06/06/2015
         <script type="text/javascript">
             var camera, scene, renderer;
 
-            var isUserInteracting = false,
-            onMouseDownMouseX = 0, onMouseDownMouseY = 0,
-            lon = 0, onMouseDownLon = 0,
-            lat = 0, onMouseDownLat = 0,
-            phi = 0, theta = 0;
-            var bFullScreen = false, fKeyCode = 70;
-
             init();
 
             function init() {
 
                 var container, mesh;
 
+                // Init WebGL render and append it to dom element.
                 container = document.getElementById('container');
-                camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1100);
-
-                camera.target = new THREE.Vector3(0, 0, 0);
-
-                scene = new THREE.Scene();
-
-                var geometry = new THREE.SphereGeometry(500, 60, 40);
-                geometry.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
-
-                var material = new THREE.MeshBasicMaterial( {
-                    map: THREE.ImageUtils.loadTexture('images/verandah-centre-equirectangular.jpg')
-                });
-
-                mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
-
-                renderer = new THREE.WebGLRenderer();
-                // In order to support v.69, I comment this line. When we are ready to v.71, we can enable it. 
-                //renderer.setPixelRatio(window.devicePixelRatio);
-
+                renderer = new THREE.WebGLRenderer();                
                 renderer.setSize(window.innerWidth, window.innerHeight);
-
                 container.appendChild( renderer.domElement );
 
-                window.addEventListener( 'resize', onWindowResize, false );
-                document.addEventListener( 'keydown', onKeyDown, false);
-                document.addEventListener( 'webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function( event ) {
-                    onFullscreenChanged( event );
+                // Setup perspective camera: fovY, aspect, near, far
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 2000);
+                //// Camera look at 0,0,0 at 3D scene
+                camera.target = new THREE.Vector3(0, 0, 0);
+                //// Camera position in 3D scene
+                camera.position.set( 0, 0, 900 );
+
+                // Create 3D sphere mesh and material
+                //// Sphere geometry: radius, widthSegments, heightSegments
+                var geometry = new THREE.SphereGeometry(500, 60, 60);
+                //// Create a basic material for mesh
+                var material = new THREE.MeshBasicMaterial( {
+                    color: 0xff0000
                 });
 
-                document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-                document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-                document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-                document.addEventListener( 'mousewheel', onDocumentMouseWheel, false ); 
-                document.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false);  
+                // Finish making our mesh
+                mesh = new THREE.Mesh(geometry, material);
 
+                // Create 3D scene and add sphere mesh
+                scene = new THREE.Scene();
+                scene.add(mesh);
+
+                window.addEventListener( 'resize', onWindowResize, false );
+            
                 gameLoop();
-            }
-
-            function onKeyDown(event) {
-                var key = event.keyCode || event.which;
-
-                if (key == fKeyCode) {
-                    triggerFullscreen();
-                }
             }
 
             function onWindowResize() {
@@ -87,106 +65,14 @@ date: 06/06/2015
                 renderer.setSize( window.innerWidth, window.innerHeight );
             }
 
-            function onFullscreenChanged( event ) {
-
-                if ( document.fullscreenEnabled ) {
-                    document.fullscreenElement;
-                }                
-            }
-
-            function triggerFullscreen() {
-
-                bFullScreen = !bFullScreen;
-
-                 // toggle fullscreen
-                if ( !document.fullscreenElement
-                    && !document.mozFullScreenElement 
-                    && !document.webkitFullscreenElement 
-                    && !document.msFullscreenElement ) {  // current working methods
-
-                    if ( document.documentElement.requestFullscreen ) {
-                        document.documentElement.requestFullscreen();
-                    } else if ( document.documentElement.msRequestFullscreen ) {
-                        document.documentElement.msRequestFullscreen();
-                    } else if ( document.documentElement.mozRequestFullScreen ) {
-                        document.documentElement.mozRequestFullScreen();
-                    } else if ( document.documentElement.webkitRequestFullscreen ) {
-                        document.documentElement.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT );
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                      document.exitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                      document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                      document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                      document.webkitExitFullscreen();
-                    }
-
-                    onWindowResize();
-                }
-            }
-
-            function onDocumentMouseDown( event ) {
-
-                //event.preventDefault(); // --- this will cause dat.GUI not work.
-
-                isUserInteracting = true;
-
-                onMouseDownMouseX = event.clientX;
-                onMouseDownMouseY = event.clientY;
-
-                onMouseDownLon = lon;
-                onMouseDownLat = lat;
-            }
-
-            function onDocumentMouseMove( event ) {
-
-                if ( isUserInteracting === true ) {
-
-                    lon = ( onMouseDownMouseX - event.clientX ) * 0.1 + onMouseDownLon;
-                    lat = ( event.clientY - onMouseDownMouseY ) * 0.1 + onMouseDownLat;
-                }
-            }
-
-            function onDocumentMouseUp( event ) {
-
-                isUserInteracting = false;
-            }
-
-            function onDocumentMouseWheel( event ) {
-                // WebKit
-                if ( event.wheelDeltaY ) {
-
-                    camera.fov -= event.wheelDeltaY * 0.05;
-                // Opera / Explorer 9
-                } else if ( event.wheelDelta ) {
-
-                    camera.fov -= event.wheelDelta * 0.05;
-                // Firefox
-                } else if ( event.detail ) {
-
-                    camera.fov += event.detail * 1.0;
-                }
-
-                camera.updateProjectionMatrix();
-            }
-
             function gameLoop() {
 
+                // requestAnimationFrame function tell browsers to update animation. Usually 60 FPS
                 requestAnimationFrame( gameLoop );
-
-                lat = Math.max( -85, Math.min( 85, lat ) );
-                phi = THREE.Math.degToRad( 90 - lat );
-                theta = THREE.Math.degToRad( lon );
-
-                camera.target.x = 500 * Math.sin( phi ) * Math.cos( theta );
-                camera.target.y = 500 * Math.cos( phi );
-                camera.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
 
                 camera.lookAt( camera.target );
 
+                // WebGL render at per update
                 renderer.render( scene, camera );
             }
 
