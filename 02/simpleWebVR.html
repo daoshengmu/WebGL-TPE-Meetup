@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+ 
+<!-- 
+WebGL Taipei meetup #02
+author: daoshengmu, http://dsmu.me
+date: 06/06/2015
+-->
+ 
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link href="../css/style.css" rel="stylesheet">
+        <link href="../css/sweetalert.css" rel="stylesheet" type="text/css" >
+        <script src="../lib/three.js"></script>
+        <script src="../lib/sweetalert.min.js"></script>
+        <script src="../js/threejs/VREffect.js"></script>
+        <title>Simple WebGL</title>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script type="text/javascript">
+            var camera, scene, renderer;
+            var isUserInteracting = false;
+            var onMouseDownMouseX = 0, onMouseDownMouseY = 0;
+            var onMouseDownLon = 0, onMouseDownLat = 0;
+            var lon = 0, lat = 0;
+            var radius = 500;
+            var bFullScreen = false, fKeyCode = 70;
+
+            init();
+
+            function init() {
+
+                var container, mesh;
+
+                // Init WebGL render and append it to dom element.
+                container = document.getElementById( 'container' );
+                renderer = new THREE.WebGLRenderer();                
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                container.appendChild( renderer.domElement );
+
+                // Create vr device effect
+
+                // Setup perspective camera: fovY, aspect, near, far
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 2000 );
+                //// Camera look at 0,0,0 at 3D scene
+                camera.target = new THREE.Vector3( 0, 0, 0 );
+                //// Camera position in 3D scene
+                camera.position.set( 0, 0, 0 );
+
+                // Create 3D sphere mesh and material
+                //// Sphere geometry: radius, widthSegments, heightSegments
+                var geometry = new THREE.SphereGeometry( radius, 60, 60 );
+                geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+
+                //// Create a basic material for mesh
+                var material = new THREE.MeshBasicMaterial( {
+                    map: THREE.ImageUtils.loadTexture( 'images/verandah-centre-equirectangular.jpg' )
+                });
+
+                // Finish making our mesh
+                mesh = new THREE.Mesh(geometry, material);
+
+                // Create 3D scene and add sphere mesh
+                scene = new THREE.Scene();
+                scene.add(mesh);
+
+                window.addEventListener( 'resize', onWindowResize, false );
+                document.addEventListener( 'keydown', onKeyDown, false);
+
+                // Add mouse controls on camera
+                document.addEventListener( 'mousedown', onMouseDown, false );
+                document.addEventListener( 'mouseup', onMouseUp, false );
+                document.addEventListener( 'mousemove', onMouseMove, false );
+                document.addEventListener( 'DOMMouseScroll', onMouseWheel, false );
+
+                // Register VR device callback
+            
+                gameLoop();
+            }
+
+            function onKeyDown(event) {
+                var key = event.keyCode || event.which;
+                if (key == fKeyCode) {
+                    triggerFullscreen();
+                }
+            }
+
+            function vrDeviceCallback(devices) {
+
+                if ( devices.length ) {
+                    swal({ title: "VR device connected!",   text: "I will close in 3 seconds.",  
+                    type: "success", timer: 3000, showConfirmButton: false });
+                } else {
+                    return;
+                }
+            }
+
+            function triggerFullscreen() {
+
+                bFullScreen = !bFullScreen;
+                
+                // Enable VR fullscreen
+                
+                // toggle fullscreen
+                if ( !document.fullscreenElement
+                    && !document.mozFullScreenElement 
+                    && !document.webkitFullscreenElement 
+                    && !document.msFullscreenElement ) {  // current working methods
+                    if ( document.documentElement.requestFullscreen ) {
+                        document.documentElement.requestFullscreen();
+                    } else if ( document.documentElement.msRequestFullscreen ) {
+                        document.documentElement.msRequestFullscreen();
+                    } else if ( document.documentElement.mozRequestFullScreen ) {
+                        document.documentElement.mozRequestFullScreen();
+                    } else if ( document.documentElement.webkitRequestFullscreen ) {
+                        document.documentElement.webkitRequestFullscreen( Element.ALLOW_KEYBOARD_INPUT );
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                      document.exitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                      document.msExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                      document.mozCancelFullScreen();
+                    } else if (document.webkitExitFullscreen) {
+                      document.webkitExitFullscreen();
+                    }
+                    onWindowResize();
+                }
+            }
+
+            function onMouseDown( event ) { 
+
+                isUserInteracting = true;
+
+                onMouseDownMouseX = event.clientX;
+                onMouseDownMouseY = event.clientY;
+
+                onMouseDownLon = lon;
+                onMouseDownLat = lat;
+            }
+
+            function onMouseUp( event ) {
+
+                isUserInteracting = false;
+            }
+
+            function onMouseMove( event ) {
+
+                if ( isUserInteracting === true ) {
+
+                    lon = ( event.clientX - onMouseDownMouseX ) * 0.1 + onMouseDownLon;
+                    // event.clientY is reverse
+                    lat = ( onMouseDownMouseY - event.clientY ) * 0.1 + onMouseDownLat;
+                }
+            }
+
+            function onMouseWheel( event ) {
+
+                if ( event.detail ) {
+
+                    camera.fov += event.detail;
+                    camera.updateProjectionMatrix();
+                }
+            }
+
+            function onWindowResize() {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+            }
+
+            function gameLoop() {
+
+                // requestAnimationFrame function tell browsers to update animation. Usually 60 FPS
+                requestAnimationFrame( gameLoop );
+
+                // Calculate camera transform according to mouse controls
+                var phi = THREE.Math.degToRad( lat ); // delta y
+                var theta = THREE.Math.degToRad( lon + 90 ); // delta x
+
+                camera.target.x = radius * Math.cos( theta );
+                camera.target.y = radius * Math.sin( phi );
+                camera.target.z = radius * Math.cos( phi ) * Math.sin( theta );
+
+                camera.lookAt( camera.target );
+
+                // WebGL render at per update
+                renderer.render( scene, camera );
+
+                // vr mode render
+
+            }
+
+        </script>   
+    </body>
+</html>
