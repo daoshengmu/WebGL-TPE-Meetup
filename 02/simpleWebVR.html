@@ -75,6 +75,7 @@ date: 06/06/2015
                 document.addEventListener( 'DOMMouseScroll', onMouseWheel, false );
 
                 // Register VR device callback
+                //// ......
             
                 gameLoop();
             }
@@ -101,6 +102,7 @@ date: 06/06/2015
                 bFullScreen = !bFullScreen;
                 
                 // Enable VR fullscreen
+                //// ......
                 
                 // toggle fullscreen
                 if ( !document.fullscreenElement
@@ -161,6 +163,8 @@ date: 06/06/2015
                 if ( event.detail ) {
 
                     camera.fov += event.detail;
+                    // vr device effect zoom in/out
+                    //// ......
                     camera.updateProjectionMatrix();
                 }
             }
@@ -192,6 +196,7 @@ date: 06/06/2015
                 renderer.render( scene, camera );
 
                 // vr mode render
+                //// ......
 
             }
 
