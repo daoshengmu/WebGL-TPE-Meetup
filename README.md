@@ -13,5 +13,5 @@ In this meetup, we will bring a entry level WebGL example to make attendees know
 https://docs.google.com/presentation/d/1d9_QyuSf6HeyrmDxaDLzOKd1eWN_I-mz5GcmZ6GBCzc/edit?usp=sharing
 
 2. Downloads:
-  * Firefox nightly: https://nightly.mozilla.org *(Please donwload desktop and Android versions)*
+  * Firefox nightly: https://nightly.mozilla.org *(Please download desktop and Android versions)*
 
