@@ -1,7 +1,7 @@
 # WebGL-TPE-Meetup
 Some sample code and tutorials for WebGL Taipei meetup
 
-## 01. Introuduction to myself and WebGL 
+## 01. Introuduction to myself and WebGL / Goo Create case sharing
 
 Slides:
 * @daoshengmu, https://docs.google.com/presentation/d/1BKG41Ul6vMcmlKcRw39MLb7Ach6r5Ao1BCxaL4g7v5c/edit?usp=sharing
