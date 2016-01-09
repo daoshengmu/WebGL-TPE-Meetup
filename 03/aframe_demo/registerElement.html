@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Register element</title>
+    <meta name="description" content="RegisterElement">
+  </head>
+  <body>
+    <p>Register element testing...</p>
+  </body>
+  <script type="text/javascript">
+    var Mytag = document.registerElement('my-tag');
+    document.body.appendChild(new Mytag());
+
+    var mytag = document.getElementsByTagName('my-tag')[0];
+    mytag.textContent = 'I am a my-tag element.';
+  </script>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Custom component</title>
+  <script src="js/document-register-element.js"></script>
+  <script src="js/mytag.js"></script>
+</head>
+<body>
+  <p>Register element testing...</p>
+</body>
+<script type="text/javascript">
+  document.body.appendChild(new Mytag());
+
+  var mytag = document.getElementsByTagName('my-tag')[0];
+  mytag.textContent = 'I am a my-tag element.';
+</script>
+</html>

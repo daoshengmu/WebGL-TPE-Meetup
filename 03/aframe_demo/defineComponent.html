@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Define component</title>
+    <meta name="description" content="Demo - A-Frame Core">
+    <script src="dist/aframe-core.js"></script>
+    <style>
+      body { background-color: black; }
+    </style>
+  </head>
+  <body>
+    <a-scene stats="true">
+      <!-- Cube -->
+      <a-entity geometry="primitive: box;" material="color: pink" position="0 2 0" scale="1 1 1"></a-entity>
+      <!-- Sphere -->
+      <a-entity id="myball" geometry="primitive: sphere" material="color: green" position="0 0 0" scale="2 2 2"></a-entity>
+    </a-scene>
+  </body>
+  <script type="text/javascript">
+    var myball = document.getElementById('myball');
+    myball.setAttribute('material', 'color: red');
+    myball.setAttribute('geometry', 'primitive: box; width: 2'); 
+  </script>
+</html>

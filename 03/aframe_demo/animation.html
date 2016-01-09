@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Demo</title>
+    <meta name="description" content="Demo - A-Frame Core">
+    <script src="dist/aframe-core.js"></script>
+    <style>
+      body { background-color: black; }
+    </style>
+  </head>
+  <body>
+    <a-scene stats="true">
+      <!-- Animation -->
+      <a-entity geometry="primitive: box;" material="color: pink" position="0 0 0" rotation="0 0 0">
+        <a-animation attribute="rotation" to="0 360 0" dur="3000" fill="forwards" repeat="indefinite">
+        </a-animation>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
