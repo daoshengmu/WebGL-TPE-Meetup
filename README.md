@@ -15,4 +15,6 @@ In this meetup, we will bring a entry level WebGL example to make attendees know
 
 2. Downloads:
   * Firefox nightly: https://nightly.mozilla.org *(Please download and install the desktop and Android versions)*
-
+ 
+## 03. Introduction to A-Frame
+Slides, http://www.slideshare.net/ellisonmu/introduction-to-aframe-57170744
